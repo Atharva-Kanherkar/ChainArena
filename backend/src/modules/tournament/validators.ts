@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { TournamentStatus } from '@prisma/client';
-import { TournamentFormat } from './types';
+import { TournamentStatus, TournamentFormat } from './types';
 
 const validTournamentStatuses: TournamentStatus[] = [
   TournamentStatus.DRAFT, 
