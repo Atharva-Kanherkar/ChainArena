@@ -67,7 +67,7 @@ export interface UpdateTournamentData {
 
 
 // Type for detailed tournament view, including relations
-export interface TournamentWithDetails extends Tournament {
+export interface TournamentWithDetails extends Omit<Tournament, 'host'> {
   host: {
     id: string;
     username: string;

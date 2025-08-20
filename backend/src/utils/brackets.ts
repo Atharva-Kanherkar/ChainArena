@@ -1101,7 +1101,7 @@ export async function generateNextSwissRound(tournamentId: string): Promise<Matc
   const standings = calculateStandings(tournament, completedMatches);
   
   // Determine the current round (completed rounds + 1)
-  const currentRound = Math.max(...completedMatches.map(m => m.round), 0) + 1;
+  const currentRound = Math.max(...completedMatches.map((m: any) => m.round), 0) + 1;
   
   // Pair participants based on standings (Swiss pairing algorithm)
   const pairs = pairParticipants(standings);

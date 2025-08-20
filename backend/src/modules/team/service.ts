@@ -95,7 +95,7 @@ export const createTeam = async (
   }
   
   // Create team transaction to ensure all operations succeed or fail together
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: any) => {
     // Create the team - FIX HERE: Use captainId instead of captain.connect
     const team = await tx.team.create({
       data: {
@@ -389,7 +389,7 @@ export const addMemberToTeam = async (teamId: string, memberUserId: string, invi
   }
   
   // Check if user is already in this team
-  const existingMembership = team.members.find(member => member.userId === memberUserId);
+  const existingMembership = team.members.find((member: any) => member.userId === memberUserId);
   if (existingMembership) {
     throw new Error('User is already a member of this team');
   }
@@ -567,7 +567,7 @@ export const updateMemberRole = async (
   // If changing captain
   if (newCaptainId) {
     // Verify new captain is a team member
-    const newCaptain = team.members.find(m => m.id === newCaptainId);
+    const newCaptain = team.members.find((m: any) => m.id === newCaptainId);
     if (!newCaptain) {
       throw new Error('New captain must be a team member');
     }
@@ -650,7 +650,7 @@ export const getUserTeams = async (userId: string) => {
     }
   });
   
-  return participations.map(p => p.team);
+  return participations.map((p: any) => p.team);
 };
 
 export const leaveTeam = async (teamId: string, userId: string) => {

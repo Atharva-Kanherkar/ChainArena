@@ -34,7 +34,13 @@ function mapToTournamentWithDetails(tournament: any): TournamentWithDetails {
     teamSize: tournament.teamSize,
     isTeamBased: tournament.isTeamBased,
     _count: tournament._count, // Assuming _count is included
-    prize: tournament.prize || null // Pass prize if included, otherwise null
+    prize: tournament.prize || null, // Pass prize if included, otherwise null
+    // Add missing required fields with defaults
+    participants: tournament.participants || [],
+    teams: tournament.teams || [],
+    spectators: tournament.spectators || [],
+    matches: tournament.matches || [],
+    achievements: tournament.achievements || []
   };
 }
 
@@ -77,7 +83,7 @@ export const createTournament = async (
   };
 
   // Use a transaction to create both Tournament and TournamentPrize atomically
-  const createdTournament = await prisma.$transaction(async (tx) => {
+  const createdTournament = await prisma.$transaction(async (tx: any) => {
     // Step 1: Create the main tournament record
     const newTournament = await tx.tournament.create({
       data: tournamentData,
@@ -106,8 +112,8 @@ export const createTournament = async (
           tokenAddress: (tokenType && tokenType !== 'SOL') ? tokenAddress : null,
           // Store prizePool as string or null, matching schema `String?`
           prizePool: hasPrizePool ? String(prizePool) : null,
-          // Use Prisma.JsonNull for optional Json fields if null/undefined, matching schema `Json?`
-          distribution: distribution || Prisma.JsonNull,
+          // Use null for optional Json fields if null/undefined
+          distribution: distribution || null,
           // Use provided fee or default from schema `@default(5.0)`
           platformFeePercent: platformFeePercent ?? 5.0
           // escrowAddress, escrowSignature can be added later if needed
@@ -288,7 +294,7 @@ export const updateTournament = async (
  // ... inside updateTournament ...
 
   // Use transaction for updating tournament and potentially prize
-  const updatedTournament = await prisma.$transaction(async (tx) => {
+  const updatedTournament = await prisma.$transaction(async (tx: any) => {
     // Step 1: Update the main tournament record
     const updatedMainTournament = await tx.tournament.update({
         where: { id },
@@ -331,8 +337,8 @@ export const updateTournament = async (
             prizeUpdateData.prizePool = (prizePool && String(prizePool).trim() !== '') ? String(prizePool) : null;
         }
         if (distribution !== undefined) {
-            // Set to the provided value, using Prisma.JsonNull if input is null/undefined
-            prizeUpdateData.distribution = distribution || Prisma.JsonNull;
+            // Set to the provided value, using null if input is null/undefined
+            prizeUpdateData.distribution = distribution || null;
         }
         if (platformFeePercent !== undefined) {
             // Ensure it's not null if the schema doesn't allow null
@@ -348,7 +354,7 @@ export const updateTournament = async (
                 tokenType: tokenType || 'SOL', // Default from schema
                 tokenAddress: (tokenType && tokenType !== 'SOL') ? tokenAddress : null, // Use provided or null
                 prizePool: (prizePool !== undefined && String(prizePool).trim() !== '') ? String(prizePool) : null,
-                distribution: distribution || Prisma.JsonNull,
+                distribution: distribution || null,
                 platformFeePercent: platformFeePercent ?? 5.0 // Default from schema
             },
             update: prizeUpdateData // Data if updating existing - now conditionally built
@@ -757,7 +763,7 @@ export const getUserParticipatingTournaments = async (
   ]);
   
   return {
-    items: participations.map(p => ({
+    items: participations.map((p: any) => ({
       ...p.tournament,
       team: p.team,
       joinedAt: p.createdAt
@@ -946,7 +952,7 @@ export const createTeam = async (
   }
   
   // Execute in a transaction to ensure consistency
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: any) => {
     // Step 1: Create captain as participant first
     const captain = await tx.tournamentParticipant.create({
       data: {
@@ -1434,7 +1440,7 @@ export const getTournamentResults = async (tournamentId: string): Promise<any> =
   let winner = null;
   if (tournament.status === 'COMPLETED') {
     // Find final match
-    const finalMatch = matches.find(match => {
+    const finalMatch = matches.find((match: any) => {
       // Final match is typically the one with highest round number and no next match
       return !match.nextMatchId && match.status === 'COMPLETED';
     });
@@ -1883,7 +1889,7 @@ export const getTournamentStatistics = async (tournamentId: string): Promise<any
     DISPUTED: 0
   };
   
-  matchStats.forEach(stat => {
+  matchStats.forEach((stat: any) => {
     matchCounts[stat.status] = stat._count;
   });
   
@@ -1906,7 +1912,7 @@ export const getTournamentStatistics = async (tournamentId: string): Promise<any
   
   let averageDurationMs = 0;
   if (completedMatches.length > 0) {
-    const totalDurationMs = completedMatches.reduce((sum, match) => {
+    const totalDurationMs = completedMatches.reduce((sum: any, match: any) => {
       const duration = match.endTime!.getTime() - match.startTime!.getTime();
       return sum + duration;
     }, 0);

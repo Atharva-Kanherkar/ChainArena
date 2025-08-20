@@ -1,17 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
-import { UserRole } from '@prisma/client';
 import prisma from '../lib/db';
 
 export const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
-  if (!req.user || req.user.role !== UserRole.ADMIN) {
-      res.status(403).json({ error: 'Insufficient permissions: Admin role required' });
+  if (!req.user || !req.user.isAdmin) {
+    res.status(403).json({ error: 'Insufficient permissions: Admin role required' });
+    return;
   }
   next();
 };
 
 export const requireOrganizer = (req: Request, res: Response, next: NextFunction) => {
-  if (!req.user || (req.user.role !== UserRole.ORGANIZER && req.user.role !== UserRole.ADMIN)) {
-      res.status(403).json({ error: 'Insufficient permissions: Organizer role required' });
+  if (!req.user || !req.user.isAdmin) {
+    res.status(403).json({ error: 'Insufficient permissions: Admin role required' });
+    return;
   }
   next();
 };
@@ -19,12 +20,14 @@ export const requireOrganizer = (req: Request, res: Response, next: NextFunction
 export const requireJudgeOrAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.user) {
-        res.status(401).json({ error: 'Authentication required' });
+      res.status(401).json({ error: 'Authentication required' });
+      return;
     }
     
     // Admin can always verify matches
-    if (req.user.role === UserRole.ADMIN) {
-        next();
+    if (req.user.isAdmin) {
+      next();
+      return;
     }
     
     const { id: matchId } = req.params;
@@ -38,24 +41,27 @@ export const requireJudgeOrAdmin = async (req: Request, res: Response, next: Nex
     });
     
     if (!match) {
-        res.status(404).json({ error: 'Match not found' });
+      res.status(404).json({ error: 'Match not found' });
+      return;
     }
     
-    // Check if user is tournament organizer
-    if (match?.tournament.organizerId === req.user.id) {
-        next();
+    // Check if user is tournament host (organizer)
+    if (match.tournament.hostId === req.user.id) {
+      next();
+      return;
     }
     
     // Check if user is assigned judge for this match
-    if (match?.judgeId === req.user.id) {
-        next();
+    if (match.judgeId === req.user.id) {
+      next();
+      return;
     }
     
-      res.status(403).json({ 
-      error: 'Insufficient permissions: Only admins, tournament organizers, or assigned judges can perform this action' 
+    res.status(403).json({ 
+      error: 'Insufficient permissions: Only admins, tournament hosts, or assigned judges can perform this action' 
     });
   } catch (error) {
     console.error('Error in requireJudgeOrAdmin middleware:', error);
-      res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error' });
   }
 };
