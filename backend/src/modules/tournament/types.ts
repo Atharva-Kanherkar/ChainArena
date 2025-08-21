@@ -1,9 +1,16 @@
  
-import { Tournament, TournamentStatus,  User, TournamentParticipant, Team, TournamentPrize } from '@prisma/client';
-import { Prisma } from '@prisma/client'; // Import Prisma namespace for JsonValue
+// Temporarily commented out to avoid runtime import errors
+// import { Tournament, TournamentStatus,  User, TournamentParticipant, Team, TournamentPrize, Prisma } from '@prisma/client';
 
-// Use Prisma's enum directly
-export { TournamentStatus } from '@prisma/client';
+// Define types locally to avoid runtime issues
+export enum TournamentStatus {
+  DRAFT = 'DRAFT',
+  REGISTRATION_OPEN = 'REGISTRATION_OPEN',
+  REGISTRATION_CLOSED = 'REGISTRATION_CLOSED',
+  ONGOING = 'ONGOING',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED'
+}
 
 // Define tournament formats as a proper enum
 export enum TournamentFormat {
@@ -38,7 +45,7 @@ export interface CreateTournamentData extends BaseTournamentData {
   tokenType?: string | null;
   tokenAddress?: string | null;
   prizePool?: string | number | null; // Allow number from form, convert to string in service
-  distribution?: Prisma.JsonValue | null; // Use Prisma.JsonValue for JSON type
+  distribution?: any | null; // Use any for JSON type to avoid runtime issues
   platformFeePercent?: number | null;
 }
 
@@ -61,13 +68,33 @@ export interface UpdateTournamentData {
   tokenType?: string | null;
   tokenAddress?: string | null;
   prizePool?: string | number | null;
-  distribution?: Prisma.JsonValue | null;
+  distribution?: any | null;
   platformFeePercent?: number | null;
 }
 
 
 // Type for detailed tournament view, including relations
-export interface TournamentWithDetails extends Tournament {
+export interface TournamentWithDetails {
+  id: string;
+  name: string;
+  description: string | null;
+  startDate: Date | null;
+  endDate: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  status: TournamentStatus;
+  format: string;
+  registrationDeadline: Date | null;
+  hostId: string;
+  minParticipants: number | null;
+  maxParticipants: number | null;
+  teamSize: number | null;
+  isTeamBased: boolean;
+  participants: any[];
+  teams: any[];
+  spectators: any[];
+  matches: any[];
+  achievements: any[];
   host: {
     id: string;
     username: string;
@@ -79,7 +106,7 @@ export interface TournamentWithDetails extends Tournament {
     spectators: number;
   };
   // Make prize explicitly optional based on schema
-  prize: TournamentPrize | null;
+  prize: any | null;
 }
 
 // Type for paginated results
@@ -94,8 +121,28 @@ export interface PaginatedResult<T> {
 }
 
 // You might have other types here...
-export interface TournamentWithHost extends Tournament {
-    host: User;
+export interface TournamentWithHost {
+  id: string;
+  name: string;
+  description: string | null;
+  startDate: Date | null;
+  endDate: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  status: TournamentStatus;
+  format: string;
+  registrationDeadline: Date | null;
+  hostId: string;
+  minParticipants: number | null;
+  maxParticipants: number | null;
+  teamSize: number | null;
+  isTeamBased: boolean;
+  participants: any[];
+  teams: any[];
+  spectators: any[];
+  matches: any[];
+  achievements: any[];
+  host: any;
 }
 
 // Add other specific types as needed...

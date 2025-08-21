@@ -1,14 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
-import { TournamentStatus } from '@prisma/client';
-import { TournamentFormat } from './types';
+import { TournamentStatus, TournamentFormat } from './types';
 
 const validTournamentStatuses: TournamentStatus[] = [
-  'DRAFT', 
-  'REGISTRATION_OPEN', 
-  'REGISTRATION_CLOSED', 
-  'ONGOING', 
-  'COMPLETED', 
-  'CANCELLED'
+  TournamentStatus.DRAFT, 
+  TournamentStatus.REGISTRATION_OPEN, 
+  TournamentStatus.REGISTRATION_CLOSED, 
+  TournamentStatus.ONGOING, 
+  TournamentStatus.COMPLETED, 
+  TournamentStatus.CANCELLED
 ];
 
 const validTournamentFormats: string[] = [

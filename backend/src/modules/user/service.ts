@@ -51,9 +51,9 @@ export const getUserById = async (id: string) => {
     isSpectator: user.spectatedTournaments.length > 0,
     // Include some recent tournament data (optional)
     recentTournaments: {
-      hosted: user.hostedTournaments.map(t => t.id),
-      participating: user.participation.map(p => p.tournamentId),
-      spectating: user.spectatedTournaments.map(t => t.id)
+      hosted: user.hostedTournaments.map((t: any) => t.id),
+      participating: user.participation.map((p: any) => p.tournamentId),
+      spectating: user.spectatedTournaments.map((t: any) => t.id)
     }
   };
 };
@@ -115,9 +115,9 @@ export const updateUser = async (id: string, data: UpdateUserData) => {
     isSpectator: user.spectatedTournaments.length > 0,
     // Include some recent tournament data (optional)
     recentTournaments: {
-      hosted: user.hostedTournaments.map(t => t.id),
-      participating: user.participation.map(p => p.tournamentId),
-      spectating: user.spectatedTournaments.map(t => t.id)
+      hosted: user.hostedTournaments.map((t: any) => t.id),
+      participating: user.participation.map((p: any) => p.tournamentId),
+      spectating: user.spectatedTournaments.map((t: any) => t.id)
     }
   };
 };
@@ -161,7 +161,7 @@ export const getUsers = async (page = 1, limit = 10, search?: string) => {
   ]);
   
   // Transform users to include role indicators
-  const transformedUsers = users.map(user => ({
+  const transformedUsers = users.map((user: any) => ({
     id: user.id,
     username: user.username,
     email: user.email,

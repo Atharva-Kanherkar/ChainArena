@@ -530,8 +530,8 @@ export const disputeMatchResult = async (id: string, userId: string, reason: str
   const isParticipant = (
     (match.participantA?.userId === userId) || 
     (match.participantB?.userId === userId) ||
-    (match.teamA?.members.some(m => m.userId === userId)) ||
-    (match.teamB?.members.some(m => m.userId === userId))
+    (match.teamA?.members.some((m: any) => m.userId === userId)) ||
+    (match.teamB?.members.some((m: any) => m.userId === userId))
   );
 
   if (!isParticipant) {
