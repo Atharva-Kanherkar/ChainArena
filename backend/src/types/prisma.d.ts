@@ -22,51 +22,64 @@ declare module '@prisma/client' {
   export interface User {
     id: string;
     email: string;
-    username?: string | null;
-    password?: string | null;
-    avatar?: string | null;
-    bio?: string | null;
+    username: string | null;
+    password: string | null;
+    avatar: string | null;
+    bio: string | null;
     createdAt: Date;
     updatedAt: Date;
-    walletAddress?: string | null;
-    supabaseId?: string | null;
+    walletAddress: string | null;
+    supabaseId: string | null;
     isAdmin: boolean;
     hostedTournaments: Tournament[];
     participation: TournamentParticipant[];
     spectatedTournaments: Tournament[];
     judgedMatches: Match[];
+    _count?: {
+      hostedTournaments?: number;
+      participation?: number;
+      spectatedTournaments?: number;
+      judgedMatches?: number;
+    };
   }
 
   export interface Tournament {
     id: string;
     name: string;
-    description?: string | null;
-    startDate?: Date | null;
-    endDate?: Date | null;
+    description: string | null;
+    startDate: Date | null;
+    endDate: Date | null;
     createdAt: Date;
     updatedAt: Date;
     status: TournamentStatus;
     format: string;
-    registrationDeadline?: Date | null;
+    registrationDeadline: Date | null;
     hostId: string;
     host: User;
-    minParticipants?: number | null;
-    maxParticipants?: number | null;
-    teamSize?: number | null;
+    minParticipants: number | null;
+    maxParticipants: number | null;
+    teamSize: number | null;
     isTeamBased: boolean;
     participants: TournamentParticipant[];
     teams: Team[];
     spectators: User[];
     matches: Match[];
-    prize?: TournamentPrize | null;
+    prize: TournamentPrize | null;
     achievements: Achievement[];
+    _count?: {
+      participants?: number;
+      teams?: number;
+      spectators?: number;
+      matches?: number;
+      achievements?: number;
+    };
   }
 
   export interface Team {
     id: string;
     name: string;
-    description?: string | null;
-    logo?: string | null;
+    description: string | null;
+    logo: string | null;
     createdAt: Date;
     updatedAt: Date;
     tournamentId: string;
@@ -77,21 +90,27 @@ declare module '@prisma/client' {
     matchesAsTeamA: Match[];
     matchesAsTeamB: Match[];
     receivedPayments: PrizePayment[];
+    _count?: {
+      members?: number;
+      matchesAsTeamA?: number;
+      matchesAsTeamB?: number;
+      receivedPayments?: number;
+    };
   }
 
   export interface TournamentParticipant {
     id: string;
     createdAt: Date;
     updatedAt: Date;
-    seed?: number | null;
+    seed: number | null;
     isApproved: boolean;
-    entryFeeTx?: string | null;
+    entryFeeTx: string | null;
     userId: string;
     user: User;
     tournamentId: string;
     tournament: Tournament;
-    teamId?: string | null;
-    team?: Team | null;
+    teamId: string | null;
+    team: Team | null;
     matchesAsParticipantA: Match[];
     matchesAsParticipantB: Match[];
     receivedPayments: PrizePayment[];
@@ -102,27 +121,27 @@ declare module '@prisma/client' {
     id: string;
     createdAt: Date;
     updatedAt: Date;
-    scheduledTime?: Date | null;
-    startTime?: Date | null;
-    endTime?: Date | null;
+    scheduledTime: Date | null;
+    startTime: Date | null;
+    endTime: Date | null;
     status: MatchStatus;
     round: number;
     matchNumber: number;
     tournamentId: string;
     tournament: Tournament;
-    teamAId?: string | null;
-    teamA?: Team | null;
-    teamBId?: string | null;
-    teamB?: Team | null;
-    participantAId?: string | null;
-    participantA?: TournamentParticipant | null;
-    participantBId?: string | null;
-    participantB?: TournamentParticipant | null;
-    nextMatchId?: string | null;
-    result?: any;
-    bracketSection?: string | null;
-    judgeId?: string | null;
-    judge?: User | null;
+    teamAId: string | null;
+    teamA: Team | null;
+    teamBId: string | null;
+    teamB: Team | null;
+    participantAId: string | null;
+    participantA: TournamentParticipant | null;
+    participantBId: string | null;
+    participantB: TournamentParticipant | null;
+    nextMatchId: string | null;
+    result: any;
+    bracketSection: string | null;
+    judgeId: string | null;
+    judge: User | null;
   }
 
   export interface TournamentPrize {
@@ -131,13 +150,13 @@ declare module '@prisma/client' {
     updatedAt: Date;
     tournamentId: string;
     tournament: Tournament;
-    entryFee?: string | null;
-    prizePool?: string | null;
+    entryFee: string | null;
+    prizePool: string | null;
     tokenType: string;
-    tokenAddress?: string | null;
-    escrowAddress?: string | null;
-    escrowSignature?: string | null;
-    distribution?: any;
+    tokenAddress: string | null;
+    escrowAddress: string | null;
+    escrowSignature: string | null;
+    distribution: any;
     platformFeePercent: number;
     payouts: PrizePayment[];
   }
@@ -150,10 +169,10 @@ declare module '@prisma/client' {
     amount: string;
     position: string;
     recipientType: string;
-    teamId?: string | null;
-    participantId?: string | null;
-    team?: Team | null;
-    participant?: TournamentParticipant | null;
+    teamId: string | null;
+    participantId: string | null;
+    team: Team | null;
+    participant: TournamentParticipant | null;
     txSignature: string;
     txConfirmed: boolean;
   }
@@ -286,16 +305,112 @@ declare module '@prisma/client' {
   }
 
   export class PrismaClient {
-    user: any;
-    tournament: any;
-    team: any;
-    tournamentParticipant: any;
-    match: any;
-    tournamentPrize: any;
-    prizePayment: any;
-    achievement: any;
-    tournamentAnnouncement: any;
-    $transaction: any;
+    user: {
+      findUnique: (args?: any) => Promise<User | null>;
+      findMany: (args?: any) => Promise<User[]>;
+      findFirst: (args?: any) => Promise<User | null>;
+      create: (args: any) => Promise<User>;
+      update: (args: any) => Promise<User>;
+      upsert: (args: any) => Promise<User>;
+      delete: (args: any) => Promise<User>;
+      count: (args?: any) => Promise<number>;
+    };
+    
+    tournament: {
+      findUnique: (args?: any) => Promise<Tournament | null>;
+      findMany: (args?: any) => Promise<Tournament[]>;
+      findFirst: (args?: any) => Promise<Tournament | null>;
+      create: (args: any) => Promise<Tournament>;
+      update: (args: any) => Promise<Tournament>;
+      upsert: (args: any) => Promise<Tournament>;
+      delete: (args: any) => Promise<Tournament>;
+      count: (args?: any) => Promise<number>;
+    };
+    
+    team: {
+      findUnique: (args?: any) => Promise<Team | null>;
+      findMany: (args?: any) => Promise<Team[]>;
+      findFirst: (args?: any) => Promise<Team | null>;
+      create: (args: any) => Promise<Team>;
+      update: (args: any) => Promise<Team>;
+      upsert: (args: any) => Promise<Team>;
+      delete: (args: any) => Promise<Team>;
+      count: (args?: any) => Promise<number>;
+    };
+    
+    tournamentParticipant: {
+      findUnique: (args?: any) => Promise<TournamentParticipant | null>;
+      findMany: (args?: any) => Promise<TournamentParticipant[]>;
+      findFirst: (args?: any) => Promise<TournamentParticipant | null>;
+      create: (args: any) => Promise<TournamentParticipant>;
+      update: (args: any) => Promise<TournamentParticipant>;
+      upsert: (args: any) => Promise<TournamentParticipant>;
+      delete: (args: any) => Promise<TournamentParticipant>;
+      count: (args?: any) => Promise<number>;
+    };
+    
+    match: {
+      findUnique: (args?: any) => Promise<Match | null>;
+      findMany: (args?: any) => Promise<Match[]>;
+      findFirst: (args?: any) => Promise<Match | null>;
+      create: (args: any) => Promise<Match>;
+      update: (args: any) => Promise<Match>;
+      upsert: (args: any) => Promise<Match>;
+      delete: (args: any) => Promise<Match>;
+      deleteMany: (args: any) => Promise<{count: number}>;
+      count: (args?: any) => Promise<number>;
+      groupBy: (args: any) => Promise<any[]>;
+    };
+    
+    tournamentPrize: {
+      findUnique: (args?: any) => Promise<TournamentPrize | null>;
+      findMany: (args?: any) => Promise<TournamentPrize[]>;
+      findFirst: (args?: any) => Promise<TournamentPrize | null>;
+      create: (args: any) => Promise<TournamentPrize>;
+      update: (args: any) => Promise<TournamentPrize>;
+      upsert: (args: any) => Promise<TournamentPrize>;
+      delete: (args: any) => Promise<TournamentPrize>;
+      count: (args?: any) => Promise<number>;
+    };
+    
+    prizePayment: {
+      findUnique: (args?: any) => Promise<PrizePayment | null>;
+      findMany: (args?: any) => Promise<PrizePayment[]>;
+      findFirst: (args?: any) => Promise<PrizePayment | null>;
+      create: (args: any) => Promise<PrizePayment>;
+      update: (args: any) => Promise<PrizePayment>;
+      upsert: (args: any) => Promise<PrizePayment>;
+      delete: (args: any) => Promise<PrizePayment>;
+      count: (args?: any) => Promise<number>;
+    };
+    
+    achievement: {
+      findUnique: (args?: any) => Promise<Achievement | null>;
+      findMany: (args?: any) => Promise<Achievement[]>;
+      findFirst: (args?: any) => Promise<Achievement | null>;
+      create: (args: any) => Promise<Achievement>;
+      update: (args: any) => Promise<Achievement>;
+      upsert: (args: any) => Promise<Achievement>;
+      delete: (args: any) => Promise<Achievement>;
+      count: (args?: any) => Promise<number>;
+    };
+    
+    tournamentAnnouncement: {
+      findUnique: (args?: any) => Promise<TournamentAnnouncement | null>;
+      findMany: (args?: any) => Promise<TournamentAnnouncement[]>;
+      findFirst: (args?: any) => Promise<TournamentAnnouncement | null>;
+      create: (args: any) => Promise<TournamentAnnouncement>;
+      update: (args: any) => Promise<TournamentAnnouncement>;
+      upsert: (args: any) => Promise<TournamentAnnouncement>;
+      delete: (args: any) => Promise<TournamentAnnouncement>;
+      count: (args?: any) => Promise<number>;
+    };
+    
+    $transaction: <T>(fn: (prisma: PrismaClient) => Promise<T>) => Promise<T>;
+    $connect: () => Promise<void>;
+    $disconnect: () => Promise<void>;
+
+    constructor(options?: any);
   }
 
   export default PrismaClient;

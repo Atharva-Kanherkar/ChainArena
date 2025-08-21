@@ -414,7 +414,7 @@ export const registerParticipant = async (
   }
 
   // Use _count for checking max participants
-  if (tournament.maxParticipants && tournament._count.participants >= tournament.maxParticipants) {
+  if (tournament.maxParticipants && tournament._count?.participants && tournament._count.participants >= tournament.maxParticipants) {
     throw new Error('Tournament has reached maximum participants');
   }
 
@@ -824,10 +824,10 @@ export const getUserSpectatedTournaments = async (
   return {
     items: user.spectatedTournaments.map(mapToTournamentWithDetails),
     pagination: {
-      total: user._count.spectatedTournaments,
+      total: user._count?.spectatedTournaments || 0,
       page,
       limit,
-      pages: Math.ceil(user._count.spectatedTournaments / limit)
+      pages: Math.ceil((user._count?.spectatedTournaments || 0) / limit)
     }
   };
 };
@@ -1127,7 +1127,7 @@ export const addTeamMember = async (
     where: { id: tournamentId }
   });
   
-  if (tournament?.teamSize && team._count.members >= tournament.teamSize) {
+  if (tournament?.teamSize && team._count?.members && team._count.members >= tournament.teamSize) {
     throw new Error(`Team has reached maximum size of ${tournament.teamSize} members`);
   }
   
@@ -1928,9 +1928,9 @@ export const getTournamentStatistics = async (tournamentId: string): Promise<any
     tournamentId,
     tournamentName: tournament.name,
     status: tournament.status,
-    participantCount: tournament._count.participants,
-    teamCount: tournament._count.teams,
-    spectatorCount: tournament._count.spectators,
+    participantCount: tournament._count?.participants || 0,
+    teamCount: tournament._count?.teams || 0,
+    spectatorCount: tournament._count?.spectators || 0,
     matchStatistics: {
       total: totalMatches,
       ...matchCounts,

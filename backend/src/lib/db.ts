@@ -1,46 +1,49 @@
-// Development-friendly Prisma client setup
-let prisma: any;
+import { PrismaClient } from '@prisma/client';
+
+// Create Prisma client with graceful fallback for development
+let prisma: PrismaClient;
 
 try {
-  // Try to import the real Prisma client
-  const { PrismaClient } = require('@prisma/client');
   prisma = new PrismaClient();
   console.log('✅ Prisma client initialized successfully');
 } catch (error) {
   console.warn('⚠️  Prisma client initialization failed, using mock client for development:', (error as any)?.message || error);
   
-  // Create a comprehensive mock Prisma client for development
+  // Create a mock Prisma client for development that matches the type definitions
   const createMockMethods = () => ({
     findUnique: async (args?: any) => {
-      console.log('Mock findUnique called with:', args?.where);
+      console.log('🔧 Mock findUnique called with:', args?.where);
       return null;
     },
     findMany: async (args?: any) => {
-      console.log('Mock findMany called');
+      console.log('🔧 Mock findMany called');
       return [];
     },
     findFirst: async (args?: any) => {
-      console.log('Mock findFirst called with:', args?.where);
+      console.log('🔧 Mock findFirst called with:', args?.where);
       return null;
     },
-    create: async (args?: any) => {
-      console.log('Mock create called with:', args?.data);
+    create: async (args: any) => {
+      console.log('🔧 Mock create called with:', args?.data);
       return { id: 'mock-id-' + Date.now(), ...args?.data };
     },
-    update: async (args?: any) => {
-      console.log('Mock update called with:', args?.where, args?.data);
+    update: async (args: any) => {
+      console.log('🔧 Mock update called with:', args?.where, args?.data);
       return { id: args?.where?.id || 'mock-id', ...args?.data };
     },
-    upsert: async (args?: any) => {
-      console.log('Mock upsert called');
+    upsert: async (args: any) => {
+      console.log('🔧 Mock upsert called');
       return { id: 'mock-id-' + Date.now(), ...args?.create };
     },
-    delete: async (args?: any) => {
-      console.log('Mock delete called with:', args?.where);
+    delete: async (args: any) => {
+      console.log('🔧 Mock delete called with:', args?.where);
       return { id: args?.where?.id || 'mock-id' };
     },
+    deleteMany: async (args: any) => {
+      console.log('🔧 Mock deleteMany called with:', args);
+      return { count: 0 };
+    },
     count: async () => 0,
-    aggregate: async () => ({ _count: { _all: 0 } }),
     groupBy: async () => [],
   });
 
@@ -56,7 +59,6 @@ try {
     tournamentAnnouncement: createMockMethods(),
     $transaction: async (fn: any) => {
       console.log('🔄 Mock transaction executed');
-      // Execute the transaction function with this mock client
       return await fn(prisma);
     },
     $connect: async () => {
@@ -65,7 +67,7 @@ try {
     $disconnect: async () => {
       console.log('🔌 Mock Prisma disconnect');
     },
-  };
+  } as any;
 }
 
 export default prisma;
