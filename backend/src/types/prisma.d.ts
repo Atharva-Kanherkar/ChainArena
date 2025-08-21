@@ -1,5 +1,5 @@
-// Temporary type declarations to fix Prisma import issues
-// This file should be removed once Prisma client is properly generated
+// Prisma client type definitions for development and production
+// These types ensure type safety when Prisma client generation is not available
 
 declare module '@prisma/client' {
   export enum TournamentStatus {
